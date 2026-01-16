@@ -1,1 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Month Difference Calculator</title>
 
+<style>
+body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: #f4f7fb;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+header {
+    background: linear-gradient(135deg, #1d3557, #457b9d);
+    color: #fff;
+    padding: 18px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+h2 {
+    text-align: center;
+    color: #1d3557;
+}
+
+.section {
+    margin-bottom: 16px;
+}
+
+label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+}
+
+input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background: #1d3557;
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #457b9d;
+}
+
+.month-diff {
+    background: #eef4ff;
+    padding: 12px;
+    border-left: 5px solid #457b9d;
+    border-radius: 6px;
+    margin: 15px 0;
+}
+
+.note-box {
+    background: #fff6e5;
+    border-left: 5px solid #f4a261;
+    padding: 14px;
+    border-radius: 6px;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+}
+
+thead {
+    background: #1d3557;
+    color: #fff;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+}
+
+tbody tr:nth-child(even) {
+    background: #f6f8fc;
+}
+
+footer {
+    background: #1d3557;
+    color: #fff;
+    text-align: center;
+    padding: 12px;
+    margin-top: 40px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    INTERLACE STUDIES_KRISHNA
+</header>
+
+<div class="container">
+
+<h2>Month Difference & Custom Interval Calculator</h2>
+
+<div class="section">
+    <label>Start Date</label>
+    <input type="date" id="startDate">
+</div>
+
+<div class="section">
+    <label>End Date</label>
+    <input type="date" id="endDate">
+</div>
+
+<div class="month-diff">
+    <strong>Total Month Difference:</strong>
+    <span id="totalMonths">0</span> months
+</div>
+
+<div class="note-box">
+    <strong>NOTE: Month Reference (For Information Only)</strong><br><br>
+    <strong>12 Months:</strong> <strong>3, 6, 9, 10</strong><br>
+    <strong>18 Months:</strong> <strong>3, 8, 12, 16</strong><br>
+    <strong>2 Years:</strong> <strong>3, 6, 12, 18, 22</strong><br>
+    <strong>3 Years:</strong> <strong>3, 9, 15, 21, 28, 34</strong><br>
+    <strong>4 Years:</strong> <strong>3, 9, 17, 25, 33, 41, 46</strong>
+</div>
+
+<div class="section">
+    <label>Custom Month Intervals (comma separated)</label>
+    <input type="text" id="customInterval" placeholder="e.g. 3,6,9,12">
+</div>
+
+<button onclick="calculate()">Calculate</button>
+
+<table>
+<thead>
+<tr>
+    <th>Interval (Months)</th>
+    <th>Date Reached</th>
+</tr>
+</thead>
+<tbody id="resultBody"></tbody>
+</table>
+
+
+
+</div>
+
+<footer>
+    © 2026 | Made by Krishna Thapa
+</footer>
+
+<script>
+function getTotalMonths(start, end) {
+    let months = (end.getFullYear() - start.getFullYear()) * 12;
+    months += end.getMonth() - start.getMonth();
+    if (end.getDate() < start.getDate()) months--;
+    return months;
+}
+
+function addMonths(date, months) {
+    let d = new Date(date);
+    let wholeMonths = Math.floor(months);
+    let fraction = months - wholeMonths;
+
+    d.setMonth(d.getMonth() + wholeMonths);
+
+    if (fraction > 0) {
+        let daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+        d.setDate(d.getDate() + Math.round(daysInMonth * fraction));
+    }
+    return d;
+}
+
+function formatDateText(date) {
+    const months = ["January","February","March","April","May","June",
+        "July","August","September","October","November","December"];
+    return `${String(date.getDate()).padStart(2,'0')} ${months[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+function formatDateNumber(date) {
+    return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()}`;
+}
+
+function calculate() {
+    let startDate = new Date(document.getElementById("startDate").value);
+    let endDate = new Date(document.getElementById("endDate").value);
+    let customInput = document.getElementById("customInterval").value;
+
+    if (isNaN(startDate) || isNaN(endDate)) {
+        alert("Please select both dates");
+        return;
+    }
+
+    let totalMonths = getTotalMonths(startDate, endDate);
+    document.getElementById("totalMonths").innerText = totalMonths;
+
+    let intervals = [];
+
+    if (customInput.trim() !== "") {
+        customInput.split(",").forEach(v => {
+            let m = parseFloat(v.trim());
+            if (!isNaN(m) && m > 0 && m <= totalMonths) intervals.push(m);
+        });
+    }
+
+    intervals = [...new Set(intervals)].sort((a, b) => a - b);
+
+    let tbody = document.getElementById("resultBody");
+    tbody.innerHTML = "";
+
+    intervals.forEach(m => {
+        let reachedDate = addMonths(startDate, m);
+        tbody.innerHTML += `
+            <tr>
+                <td>${m}</td>
+                <td>${formatDateNumber(reachedDate)} (${formatDateText(reachedDate)})</td>
+            </tr>
+        `;
+    });
+}
+</script>
+
+</body>
+</html>
